@@ -80,7 +80,7 @@ export async function getMe(req: Request & { userId?: string }, res: Response, n
       select: { id: true, email: true, name: true, avatarUrl: true, storageUsed: true, createdAt: true },
     });
     if (!user) return next(new AppError(404, 'User not found'));
-    res.json(user);
+    res.json({ ...user, storageUsed: Number(user.storageUsed) });
   } catch (err) {
     next(err);
   }

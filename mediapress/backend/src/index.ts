@@ -3,7 +3,10 @@ import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import passport from './services/passport.service';
+import { initPassport } from './services/passport.service';
 import { authRouter } from './routes/auth.routes';
+import { oauthRouter } from './routes/oauth.routes';
 import { uploadRouter } from './routes/upload.routes';
 import { jobRouter } from './routes/job.routes';
 import { downloadRouter } from './routes/download.routes';
@@ -13,6 +16,7 @@ import { configureFfmpeg } from './utils/ffmpeg';
 import { setIo } from './utils/socket';
 
 configureFfmpeg();
+initPassport();
 
 const app = express();
 const httpServer = createServer(app);
@@ -31,8 +35,10 @@ io.on('connection', (socket) => {
 
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173', credentials: true }));
 app.use(express.json());
+app.use(passport.initialize());
 
 app.use('/api/auth', authRouter);
+app.use('/api/auth', oauthRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/jobs', jobRouter);
 app.use('/api/download', downloadRouter);
